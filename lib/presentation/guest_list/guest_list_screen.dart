@@ -4,7 +4,6 @@ import 'package:evently/presentation/contact_list/contact_list_screen.dart';
 import 'package:evently/widgets/app_button.dart';
 import 'package:evently/widgets/person_list_item.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/model/guest_data.dart';
 import '../../theme/colors.dart';
@@ -12,24 +11,12 @@ import '../../theme/decorations.dart';
 import '../../theme/fonts.dart';
 import '../../widgets/back_button.dart';
 
-class GuestListScreen extends ConsumerStatefulWidget {
+class GuestListScreen extends StatelessWidget {
   final String eventId;
 
-  const GuestListScreen({required this.eventId, Key? key}) : super(key: key);
+  GuestListScreen({required this.eventId, Key? key}) : super(key: key);
 
-  @override
-  ConsumerState<GuestListScreen> createState() => _GuestListScreenState();
-}
-
-class _GuestListScreenState extends ConsumerState<GuestListScreen> {
   List<GuestData> _list = [];
-
-  @override
-  void didChangeDependencies() {
-    GuestRepository repo = ref.read(guestRepoProvider);
-    _list = repo.getGuestsByEvent(widget.eventId);
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +56,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(builder: (context) {
                             return ContactListScreen(
-                              eventId: widget.eventId,
+                              eventId: eventId,
                             );
                           }));
                         })

@@ -1,8 +1,5 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/person_data.dart';
-
-final personRepoProvider = Provider((ref) => PersonRepository());
 
 class PersonRepository {
   final List<PersonData> _dummyContacts = [

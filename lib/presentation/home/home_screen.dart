@@ -4,29 +4,16 @@ import 'package:evently/presentation/event_details/event_details_screen.dart';
 import 'package:evently/widgets/app_button.dart';
 import 'package:evently/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/model/event_data.dart';
 import '../../theme/colors.dart';
 import '../../theme/decorations.dart';
 import '../../theme/fonts.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  HomeScreen({Key? key}) : super(key: key);
 
-  @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<EventData> _list = [];
-
-  @override
-  void didChangeDependencies() {
-    EventRepository repository = ref.watch(eventRepoProvider);
-    _list = repository.getEvents();
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {

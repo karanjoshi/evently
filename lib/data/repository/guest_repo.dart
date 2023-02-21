@@ -1,7 +1,4 @@
 import 'package:evently/data/model/guest_data.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final guestRepoProvider = Provider((ref) => GuestRepository());
 
 class GuestRepository {
   final List<GuestData> _guests = [];

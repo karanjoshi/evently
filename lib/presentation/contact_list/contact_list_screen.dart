@@ -1,12 +1,6 @@
-import 'package:evently/data/model/guest_data.dart';
-import 'package:evently/data/repository/guest_repo.dart';
-import 'package:evently/data/repository/person_repo.dart';
-import 'package:evently/presentation/home/home_screen.dart';
 import 'package:evently/widgets/app_button.dart';
 import 'package:evently/widgets/person_list_item.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../../theme/colors.dart';
 import '../../../theme/decorations.dart';
@@ -14,24 +8,12 @@ import '../../../theme/fonts.dart';
 import '../../data/model/person_data.dart';
 import '../../widgets/back_button.dart';
 
-class ContactListScreen extends ConsumerStatefulWidget {
+class ContactListScreen extends StatelessWidget {
   final String eventId;
 
   ContactListScreen({required this.eventId, Key? key}) : super(key: key);
 
-  @override
-  ConsumerState<ContactListScreen> createState() => _ContactListScreenState();
-}
-
-class _ContactListScreenState extends ConsumerState<ContactListScreen> {
   List<PersonData> _list = [];
-
-  @override
-  void didChangeDependencies() {
-    PersonRepository personRepository = ref.watch(personRepoProvider);
-    _list = personRepository.getPersonList();
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +65,7 @@ class _ContactListScreenState extends ConsumerState<ContactListScreen> {
   }
 
   void _inviteSelectedPersons(BuildContext context) {
-    GuestRepository _guestRepo = ref.read(guestRepoProvider);
+    /*GuestRepository _guestRepo = ref.read(guestRepoProvider);
     Uuid uuid = const Uuid();
     _list.forEach((element) {
       if (element.isSelected) {
@@ -93,6 +75,6 @@ class _ContactListScreenState extends ConsumerState<ContactListScreen> {
     });
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
       return const HomeScreen();
-    }));
+    }));*/
   }
 }

@@ -1,7 +1,5 @@
 import 'package:evently/data/model/event_data.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final eventRepoProvider = Provider((ref) => EventRepository());
 
 class EventRepository {
   final List<EventData> _events = [];

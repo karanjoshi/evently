@@ -1,3 +1,4 @@
+import 'package:evently/bloc/event/event_bloc.dart';
 import 'package:evently/data/model/event_data.dart';
 import 'package:evently/data/repository/event_repo.dart';
 import 'package:evently/presentation/guest_list/guest_list_screen.dart';
@@ -7,11 +8,10 @@ import 'package:evently/theme/fonts.dart';
 import 'package:evently/utils/ui_utils.dart';
 import 'package:evently/widgets/app_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../widgets/back_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddEventScreen extends ConsumerWidget {
+class AddEventScreen extends StatelessWidget {
   AddEventScreen({Key? key}) : super(key: key);
 
   final TextEditingController _titleController = TextEditingController();
@@ -21,87 +21,101 @@ class AddEventScreen extends ConsumerWidget {
   TimeOfDay? time;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: AppColors.bgColor,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const AppBackButton(),
-            Expanded(
-              flex: 1,
-              child: Center(
-                child: Text(
-                  "Plan Event",
-                  textAlign: TextAlign.center,
-                  style: AppFonts.regular32,
+  Widget build(BuildContext context) {
+    return BlocListener<EventBloc, EventState>(
+      listener: (BuildContext context, state) {
+        if (state is InvalidEventDataState) {
+          showErrorSnackbar(context, state.errorMsg);
+        }
+        if (state is EventAddedState) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return GuestListScreen(
+              eventId: state.eventData.id,
+            );
+          }));
+        }
+      },
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: AppColors.bgColor,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const AppBackButton(),
+              Expanded(
+                flex: 1,
+                child: Center(
+                  child: Text(
+                    "Plan Event",
+                    textAlign: TextAlign.center,
+                    style: AppFonts.regular32,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-                flex: 5,
-                child: Container(
-                  padding: const EdgeInsets.all(40),
-                  decoration: AppDecorations.appBgShadow,
-                  child: Form(
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: _titleController,
-                          decoration: AppDecorations.textFieldDecoration
-                              .copyWith(hintText: "Title"),
-                          style: AppFonts.regular18
-                              .copyWith(color: AppColors.textColorSecondary),
-                        ),
-                        const SizedBox(
-                          height: 38,
-                        ),
-                        TextFormField(
-                          controller: _descriptionController,
-                          decoration: AppDecorations.textFieldDecoration
-                              .copyWith(hintText: "Description"),
-                          maxLines: 4,
-                          style: AppFonts.regular18
-                              .copyWith(color: AppColors.textColorSecondary),
-                        ),
-                        const SizedBox(
-                          height: 38,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () => _openDatePicker(context),
-                              child: const _IconWithText(
-                                icon: Icons.date_range,
-                                text: "Day",
+              Expanded(
+                  flex: 5,
+                  child: Container(
+                    padding: const EdgeInsets.all(40),
+                    decoration: AppDecorations.appBgShadow,
+                    child: Form(
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _titleController,
+                            decoration: AppDecorations.textFieldDecoration
+                                .copyWith(hintText: "Title"),
+                            style: AppFonts.regular18
+                                .copyWith(color: AppColors.textColorSecondary),
+                          ),
+                          const SizedBox(
+                            height: 38,
+                          ),
+                          TextFormField(
+                            controller: _descriptionController,
+                            decoration: AppDecorations.textFieldDecoration
+                                .copyWith(hintText: "Description"),
+                            maxLines: 4,
+                            style: AppFonts.regular18
+                                .copyWith(color: AppColors.textColorSecondary),
+                          ),
+                          const SizedBox(
+                            height: 38,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () => _openDatePicker(context),
+                                child: const _IconWithText(
+                                  icon: Icons.date_range,
+                                  text: "Day",
+                                ),
                               ),
-                            ),
-                            GestureDetector(
-                              onTap: () => _openTimePicker(context),
-                              child: const _IconWithText(
-                                icon: Icons.access_time,
-                                text: "Time",
-                              ),
-                            )
-                          ],
-                        ),
-                        const Spacer(),
-                        Row(
-                          children: [
-                            Expanded(
-                                child: AppButton(
-                                    text: "Done",
-                                    onClick: () =>
-                                        _validateAndStoreEvent(context, ref))),
-                          ],
-                        )
-                      ],
+                              GestureDetector(
+                                onTap: () => _openTimePicker(context),
+                                child: const _IconWithText(
+                                  icon: Icons.access_time,
+                                  text: "Time",
+                                ),
+                              )
+                            ],
+                          ),
+                          const Spacer(),
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: AppButton(
+                                      text: "Done",
+                                      onClick: () =>
+                                          _validateAndStoreEvent(context))),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ))
-          ],
+                  ))
+            ],
+          ),
         ),
       ),
     );
@@ -126,16 +140,13 @@ class AddEventScreen extends ConsumerWidget {
     }
   }
 
-  void _validateAndStoreEvent(BuildContext context, WidgetRef ref) {
-    if (date == null) {
-      showErrorSnackbar(context, "Please select date of event");
-      return;
-    }
-    if (time == null) {
-      showErrorSnackbar(context, "Please select time of event");
-      return;
-    }
-    final eventRepo = ref.watch(eventRepoProvider);
+  void _validateAndStoreEvent(BuildContext context) {
+    BlocProvider.of<EventBloc>(context).add(AddEventDataEvent(
+        title: _titleController.text,
+        description: _descriptionController.text,
+        date: date,
+        time: time));
+    /*  final eventRepo = ref.watch(eventRepoProvider);
     EventData eventData = EventData(
         "123",
         _titleController.text,
@@ -146,7 +157,7 @@ class AddEventScreen extends ConsumerWidget {
       return GuestListScreen(
         eventId: eventData.id,
       );
-    }));
+    }));*/
   }
 }
 
