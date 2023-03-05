@@ -46,8 +46,10 @@ class GuestListScreen extends StatelessWidget {
                       flex: 3,
                       child: ListView.builder(
                         itemCount: _list.length,
-                        itemBuilder: (context, index) =>
-                            PersonListItem(personData: _list[index]),
+                        itemBuilder: (context, index) => PersonListItem(
+                          personData: _list[index],
+                          selectable: false,
+                        ),
                       ),
                     ),
                     AppButton(
