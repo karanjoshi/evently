@@ -16,6 +16,7 @@ class UserAvatar extends StatelessWidget {
       decoration: AppDecorations.avatarBg.copyWith(color: color),
       width: 30,
       height: 30,
+      margin: const EdgeInsets.only(right: 6),
       padding: const EdgeInsets.all(6),
       child: Text(
         initialChar.toUpperCase(),

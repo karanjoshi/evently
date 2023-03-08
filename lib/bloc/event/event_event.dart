@@ -15,3 +15,11 @@ class AddEventDataEvent extends EventEvent {
     this.time,
   });
 }
+
+class FetchEventsEvent extends EventEvent {}
+
+class FetchEventDetailsEvent extends EventEvent {
+  final String id;
+
+  FetchEventDetailsEvent(this.id);
+}

@@ -10,16 +10,16 @@ part 'guest_event.dart';
 part 'guest_state.dart';
 
 class GuestBloc extends Bloc<GuestEvent, GuestState> {
-  final GuestRepository _repo = GuestRepository();
+  final GuestRepository repo;
 
-  GuestBloc(super.initialState) {
+  GuestBloc(super.initialState, {required this.repo}) {
     on<InviteGuestEvent>(_onInviteGuestEvent);
   }
 
   FutureOr<void> _onInviteGuestEvent(
       InviteGuestEvent event, Emitter<GuestState> emit) {
     for (var element in event.guestList) {
-      _repo.add(element);
+      repo.add(element);
     }
 
     emit(GuestInvitedState());

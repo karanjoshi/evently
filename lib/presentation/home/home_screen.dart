@@ -1,19 +1,31 @@
-import 'package:evently/data/repository/event_repo.dart';
+import 'package:evently/bloc/event/event_bloc.dart';
+import 'package:evently/bloc/todo/todo_bloc.dart';
 import 'package:evently/presentation/add_event/add_event_screen.dart';
 import 'package:evently/presentation/event_details/event_details_screen.dart';
 import 'package:evently/widgets/app_button.dart';
 import 'package:evently/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../data/model/event_data.dart';
 import '../../theme/colors.dart';
 import '../../theme/decorations.dart';
 import '../../theme/fonts.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
-  List<EventData> _list = [];
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    BlocProvider.of<EventBloc>(context).add(FetchEventsEvent());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +34,7 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: AppColors.bgColor,
         body: Column(children: [
           Container(
-            padding: EdgeInsets.symmetric(vertical: 40),
+            padding: const EdgeInsets.symmetric(vertical: 40),
             child: Center(
               child: Text(
                 "Evently",
@@ -33,19 +45,28 @@ class HomeScreen extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-                padding: EdgeInsets.all(40),
+                padding: const EdgeInsets.all(40),
                 decoration: AppDecorations.appBgShadow,
                 child: Column(
                   children: [
                     Expanded(
                       flex: 3,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _list.length,
-                        itemBuilder: (context, index) => _EventListItem(
-                          eventData: _list[index],
-                        ),
-                      ),
+                      child: BlocBuilder<EventBloc, EventState>(
+                          builder: (context, EventState state) {
+                        if (state is EventFetchedState) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: state.events.length,
+                            itemBuilder: (context, index) => _EventListItem(
+                              eventData: state.events[index],
+                            ),
+                          );
+                        } else {
+                          return const Center(
+                            child: Text("No Events Planned!"),
+                          );
+                        }
+                      }),
                     ),
                     AppButton(
                         text: "Plan Event",
@@ -74,7 +95,9 @@ class _EventListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return const EventDetailsScreen();
+          return EventDetailsScreen(
+            eventId: eventData.id,
+          );
         }));
       },
       child: Container(
@@ -90,7 +113,7 @@ class _EventListItem extends StatelessWidget {
                       const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
                   decoration: AppDecorations.avatarBg,
                   child: Text(
-                    "",
+                    DateFormat("dd MMM").format(eventData.datetime),
                     style: AppFonts.regular26,
                   ),
                 ),
@@ -102,7 +125,9 @@ class _EventListItem extends StatelessWidget {
                         text: "at ",
                         style: AppFonts.regular12,
                         children: [
-                      TextSpan(text: "12:00", style: AppFonts.regular20)
+                      TextSpan(
+                          text: DateFormat("hh:mm").format(eventData.datetime),
+                          style: AppFonts.regular20)
                     ])),
                 const Spacer(),
                 const Icon(
@@ -114,7 +139,8 @@ class _EventListItem extends StatelessWidget {
                   width: 5,
                 ),
                 Text(
-                  "01/10",
+                  BlocProvider.of<TodoBloc>(context)
+                      .getTodoCounts(eventData.todos),
                   style: AppFonts.regular18,
                 )
               ],
@@ -123,14 +149,14 @@ class _EventListItem extends StatelessWidget {
               height: 15,
             ),
             Text(
-              "Doe's Birthday",
+              eventData.title,
               style: AppFonts.regular18,
             ),
             const SizedBox(
               height: 5,
             ),
             Text(
-              "Party at Doe's house",
+              eventData.description,
               style: AppFonts.regular14,
             ),
             const SizedBox(
@@ -141,35 +167,16 @@ class _EventListItem extends StatelessWidget {
                 SizedBox(
                   width: 138,
                   height: 30,
-                  child: ListView(
+                  child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    children: const [
-                      UserAvatar(
-                        initialChar: "j",
+                    itemCount: eventData.guests?.length,
+                    itemBuilder: (context, index) {
+                      return UserAvatar(
+                        initialChar:
+                            eventData.guests![index].name[0].toUpperCase(),
                         color: AppColors.avatarBg,
-                      ),
-                      SizedBox(
-                        width: 6,
-                      ),
-                      UserAvatar(
-                        initialChar: "k",
-                        color: Color(0xff605DCC),
-                      ),
-                      SizedBox(
-                        width: 6,
-                      ),
-                      UserAvatar(
-                        initialChar: "s",
-                        color: Color(0xff875DCC),
-                      ),
-                      SizedBox(
-                        width: 6,
-                      ),
-                      UserAvatar(
-                        initialChar: "+4",
-                        color: Color(0xffF5F5F5),
-                      )
-                    ],
+                      );
+                    },
                   ),
                 ),
               ],

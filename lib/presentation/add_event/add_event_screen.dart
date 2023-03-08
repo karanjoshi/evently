@@ -1,6 +1,4 @@
 import 'package:evently/bloc/event/event_bloc.dart';
-import 'package:evently/data/model/event_data.dart';
-import 'package:evently/data/repository/event_repo.dart';
 import 'package:evently/presentation/guest_list/guest_list_screen.dart';
 import 'package:evently/theme/colors.dart';
 import 'package:evently/theme/decorations.dart';
@@ -8,8 +6,9 @@ import 'package:evently/theme/fonts.dart';
 import 'package:evently/utils/ui_utils.dart';
 import 'package:evently/widgets/app_button.dart';
 import 'package:flutter/material.dart';
-import '../../widgets/back_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../widgets/back_button.dart';
 
 class AddEventScreen extends StatelessWidget {
   AddEventScreen({Key? key}) : super(key: key);

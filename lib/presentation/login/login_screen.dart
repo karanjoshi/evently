@@ -102,6 +102,5 @@ class _SignInWithGoogleButton extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }

@@ -10,14 +10,13 @@ import 'package:uuid/uuid.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/decorations.dart';
 import '../../../theme/fonts.dart';
-import '../../data/model/person_data.dart';
 import '../../widgets/back_button.dart';
 import '../home/home_screen.dart';
 
 class ContactListScreen extends StatelessWidget {
   final String eventId;
 
-  ContactListScreen({required this.eventId, Key? key}) : super(key: key);
+  const ContactListScreen({required this.eventId, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

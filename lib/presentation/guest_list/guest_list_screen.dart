@@ -1,5 +1,3 @@
-import 'package:evently/data/model/person_data.dart';
-import 'package:evently/data/repository/guest_repo.dart';
 import 'package:evently/presentation/contact_list/contact_list_screen.dart';
 import 'package:evently/widgets/app_button.dart';
 import 'package:evently/widgets/person_list_item.dart';
